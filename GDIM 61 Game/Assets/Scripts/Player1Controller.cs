@@ -17,8 +17,10 @@ public class Player1Controller : MonoBehaviour
     bool isRunPressed;
     CharacterController characterController;
 
-    float walkSpeed = 5.0f;
-    float runSpeed = 12.0f;
+    //float walkSpeed = 5.0f;
+    //float runSpeed = 12.0f;
+    float walkSpeed = 10.0f;
+    float runSpeed = 24.0f;
 
     //gravity
     float gravity = -9.8f;
@@ -27,7 +29,8 @@ public class Player1Controller : MonoBehaviour
     //jumping variables
     bool isJumpPressed = false;
     float initialJumpVelocity;
-    float maxJumpHeight = 3.0f;
+    //float maxJumpHeight = 3.0f;
+    float maxJumpHeight = 6.0f;
     float maxJumpTime = 0.5f;
     bool isJumping = false;
 
