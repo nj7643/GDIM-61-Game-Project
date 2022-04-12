@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class Player1Controller : MonoBehaviour
 {
@@ -20,7 +21,7 @@ public class Player1Controller : MonoBehaviour
     //float walkSpeed = 5.0f;
     //float runSpeed = 12.0f;
     float walkSpeed = 10.0f;
-    float runSpeed = 24.0f;
+    float runSpeed = 16.0f;
 
     //gravity
     float gravity = -9.8f;
@@ -36,11 +37,23 @@ public class Player1Controller : MonoBehaviour
 
 
     //grapple variables
-    bool isGrappleAimPressed = false;
+    bool isGrapplePressed = false;
+
+    //grapple Aim variables
+    Vector2 currentAimInput;
+    public Slider m_AimSlider;
+    public Canvas ArrowDirection;
+
+    public float m_MinLaunchForce = 15f;
+    public float m_MaxLaunchForce = 30f;
+    private float m_CurrentLaunchForce;
 
 
     private void Awake()
     {
+
+        m_CurrentLaunchForce = m_MinLaunchForce;
+        m_AimSlider.value = m_MinLaunchForce;
         //CapsuleRigidbody = GetComponent<Rigidbody>();
 
         playerInput = new PlayerInputActions();
@@ -52,22 +65,47 @@ public class Player1Controller : MonoBehaviour
         playerInput.Player.Run.started += OnRun;
         playerInput.Player.Run.canceled += OnRun;
 
-        playerInput.Player.Grapple.started += OnGrappleAim;
-        playerInput.Player.Grapple.canceled += OnGrappleAim;
+        playerInput.Player.Grapple.started += OnGrapple;
+        playerInput.Player.Grapple.canceled += OnGrapple;
 
         playerInput.Player.Jump.started += OnJump;
         playerInput.Player.Jump.canceled += OnJump;
+
+        playerInput.Player.GrappleAim.started += OnAimInput;
+        playerInput.Player.GrappleAim.canceled += OnAimInput;
+        playerInput.Player.GrappleAim.performed+= OnAimInput;
 
 
         SetupJumpVariables();
     }
 
 
+    void OnAimInput(InputAction.CallbackContext context)
+    {
+        currentAimInput = context.ReadValue<Vector2>();
 
-    void HandleGrappleAim()
+
+        //m_AimSlider.value = currentAimInput.x * 30.0f;
+        m_AimSlider.value = Mathf.Sqrt((Mathf.Pow(currentAimInput.x, 2.0f) + Mathf.Pow(currentAimInput.y, 2.0f))) * 30.0f;
+        //ArrowDirection.transform.Rotate(0, 0, 4.0f, Space.Self);
+
+        //ArrowDirection.transform.eulerAngles = new Vector3(ArrowDirection.transform.eulerAngles.x, Mathf.Atan2(currentAimInput.x, currentAimInput.y) * Mathf.Rad2Deg, ArrowDirection.transform.eulerAngles.z);
+        ArrowDirection.transform.eulerAngles = new Vector3(ArrowDirection.transform.eulerAngles.x, ArrowDirection.transform.eulerAngles.y, - Mathf.Atan2(currentAimInput.x, currentAimInput.y) * Mathf.Rad2Deg - 270);
+
+        Debug.Log(currentAimInput);
+        //Debug.Log(currentAimInput.x * currentAimInput.x);
+        //Debug.Log(m_AimSlider.value);
+        //currentMovement.x = currentMovementInput.x * walkSpeed; ;
+        //currentMovement.z = currentMovementInput.y;
+        //currentRunMovement.x = currentMovementInput.x * runSpeed;
+        //isMovementPressed = currentMovementInput.x != 0 || currentMovementInput.y != 0;
+    }
+
+
+    void HandleGrapple()
     {
 
-        if (!isJumping && characterController.isGrounded && isGrappleAimPressed)
+        if (!isJumping && characterController.isGrounded && isGrapplePressed)
         {
 
             Debug.Log("Aiming...");
@@ -78,9 +116,9 @@ public class Player1Controller : MonoBehaviour
 
     }
 
-    void OnGrappleAim(InputAction.CallbackContext context)
+    void OnGrapple(InputAction.CallbackContext context)
     {
-        isGrappleAimPressed = context.ReadValueAsButton();
+        isGrapplePressed = context.ReadValueAsButton();
         //Debug.Log("Aiming..." + context.phase);
     }
 
@@ -162,21 +200,9 @@ public class Player1Controller : MonoBehaviour
 
         HandleGravity();
         HandleJump();
-        HandleGrappleAim();
+        HandleGrapple();
     }
 
-    /*
-    public void Jump(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            Debug.Log("Jump" + context.phase);
-            //CapsuleRigidbody.AddForce(Vector3.up * 5f, ForceMode.Impulse);
-        }
-
-
-    }
-    */
 
     void OnEnable()
     {
