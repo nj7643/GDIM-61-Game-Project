@@ -4,9 +4,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class Player1Controller : MonoBehaviour
+public class PlayerControllerBackup : MonoBehaviour
 {
-
     //private Rigidbody CapsuleRigidbody;
     PlayerInputActions playerInput;
 
@@ -58,6 +57,20 @@ public class Player1Controller : MonoBehaviour
     private bool grappleInProgress = false;
     private GameObject tObject;
 
+    [SerializeField] Transform debugHitTransform;
+    private State state;
+    private Vector3 grapplePosition;
+
+
+    private Vector2 characterVelocityMomentum;
+
+
+    private enum State
+    {
+        Normal, GrappleFlyingPlayer
+    }
+
+
     private void Awake()
     {
 
@@ -69,7 +82,7 @@ public class Player1Controller : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         playerInput.Player.Move.started += OnMovementInput;
         playerInput.Player.Move.canceled += OnMovementInput;
-        playerInput.Player.Move.performed+= OnMovementInput;
+        playerInput.Player.Move.performed += OnMovementInput;
 
         playerInput.Player.Run.started += OnRun;
         playerInput.Player.Run.canceled += OnRun;
@@ -84,8 +97,10 @@ public class Player1Controller : MonoBehaviour
 
         playerInput.Player.GrappleAim.started += OnAimInput;
         playerInput.Player.GrappleAim.canceled += OnAimInput;
-        playerInput.Player.GrappleAim.performed+= OnAimInput;
+        playerInput.Player.GrappleAim.performed += OnAimInput;
 
+
+        state = State.Normal;
 
         SetupJumpVariables();
     }
@@ -101,24 +116,53 @@ public class Player1Controller : MonoBehaviour
         //ArrowDirection.transform.Rotate(0, 0, 4.0f, Space.Self);
 
         //ArrowDirection.transform.eulerAngles = new Vector3(ArrowDirection.transform.eulerAngles.x, Mathf.Atan2(currentAimInput.x, currentAimInput.y) * Mathf.Rad2Deg, ArrowDirection.transform.eulerAngles.z);
-        ArrowDirection.transform.eulerAngles = new Vector3(ArrowDirection.transform.eulerAngles.x, ArrowDirection.transform.eulerAngles.y, - Mathf.Atan2(currentAimInput.x, currentAimInput.y) * Mathf.Rad2Deg - 270);
+        ArrowDirection.transform.eulerAngles = new Vector3(ArrowDirection.transform.eulerAngles.x, ArrowDirection.transform.eulerAngles.y, -Mathf.Atan2(currentAimInput.x, currentAimInput.y) * Mathf.Rad2Deg - 270);
 
 
     }
 
 
-    void HandleHookShot()
+    void HandleGrappleMovement()
     {
+        Vector3 grappleDir = (grapplePosition - transform.position).normalized;
+        float grappleSpeed = 80.0f;
+
+        characterController.Move(grappleDir * grappleSpeed * Time.deltaTime);
+
+        float reachedGrapplePositionDistance = 2.0f;
+        if (Vector3.Distance(transform.position, grapplePosition) <= reachedGrapplePositionDistance)
+        {
+            state = State.Normal;
+            ResetGravity();
+        }
+
+        //Cancel Grapple with Jump Button
+        if (isJumpPressed)
+        {
+            float momentumExtraSpeed = 1.5f;
+            characterVelocityMomentum = grappleDir * grappleSpeed * momentumExtraSpeed;
+            //characterVelocityMomentum = grappleDir * grappleSpeed;
+            //characterVelocityMomentum.x = 20f;
+            state = State.Normal;
+            ResetGravity();
+        }
 
     }
 
     void HandleGrapple()
     {
 
-        if (!isJumping && characterController.isGrounded && isGrapplePressed)
+        //if (!isJumping && characterController.isGrounded && isGrapplePressed)
+        if (!isJumping && isGrapplePressed)
         {
 
             Debug.Log("Aiming...");
+            if (Physics.Raycast(GrappleSpawn.transform.position, GrappleSpawn.transform.right, out RaycastHit hit))
+            {
+                debugHitTransform.position = hit.point;
+                state = State.GrappleFlyingPlayer;
+                grapplePosition = hit.point;
+            }
         }
 
         else if (!isGrapplePressed)
@@ -151,7 +195,7 @@ public class Player1Controller : MonoBehaviour
 
     void SetupJumpVariables()
     {
-        float timeToApex = maxJumpTime/2;
+        float timeToApex = maxJumpTime / 2;
         gravity = (-2 * maxJumpHeight) / Mathf.Pow(timeToApex, 2);
         initialJumpVelocity = (2 * maxJumpHeight) / timeToApex;
     }
@@ -167,27 +211,89 @@ public class Player1Controller : MonoBehaviour
     {
         if (characterController.isGrounded)
         {
-            
+
             currentMovement.y = groundedGravity;
             currentRunMovement.y = groundedGravity;
         }
 
         else
         {
-            
+
             currentMovement.y += gravity * Time.deltaTime;
             currentRunMovement.y += gravity * Time.deltaTime;
 
         }
     }
 
-    void OnMovementInput(InputAction.CallbackContext context)
+    private void ResetGravity()
     {
-        currentMovementInput = context.ReadValue<Vector2>();
+        currentMovement.y = groundedGravity;
+        currentRunMovement.y = groundedGravity;
+    }
+
+
+    void HandleMovement()
+    {
         currentMovement.x = currentMovementInput.x * walkSpeed; ;
         //currentMovement.z = currentMovementInput.y;
         currentRunMovement.x = currentMovementInput.x * runSpeed;
         isMovementPressed = currentMovementInput.x != 0 || currentMovementInput.y != 0;
+
+        //Apply Momentum
+        currentMovement.x += characterVelocityMomentum.x;
+        currentRunMovement.x += characterVelocityMomentum.x;
+
+
+        if (isRunPressed)
+        {
+            characterController.Move(currentRunMovement * Time.deltaTime);
+        }
+        else
+        {
+            characterController.Move(currentMovement * Time.deltaTime);
+        }
+
+
+        //Dampen Momentum
+        if (characterVelocityMomentum.magnitude >= 0f)
+        {
+            float momentumDrag = 3.5f;
+            characterVelocityMomentum -= characterVelocityMomentum * momentumDrag * Time.deltaTime;
+            if (characterVelocityMomentum.magnitude < .0f)
+            {
+                characterVelocityMomentum = Vector2.zero;
+            }
+        }
+    }
+
+    void OnMovementInput(InputAction.CallbackContext context)
+    {
+        currentMovementInput = context.ReadValue<Vector2>();
+
+        /*
+        currentMovement.x = currentMovementInput.x * walkSpeed; ;
+        //currentMovement.z = currentMovementInput.y;
+        currentRunMovement.x = currentMovementInput.x * runSpeed;
+        isMovementPressed = currentMovementInput.x != 0 || currentMovementInput.y != 0;
+
+        //Apply Momentum
+        currentMovement.x += characterVelocityMomentum.x;
+
+
+
+
+        //Dampen Momentum
+        if (characterVelocityMomentum.x >= 0f)
+        {
+            float momentumDrag = 5f;
+            characterVelocityMomentum.x -= characterVelocityMomentum.x * momentumDrag * Time.deltaTime;
+            if(characterVelocityMomentum.x < .0f)
+            {
+                characterVelocityMomentum.x = 0f;
+            }
+        }
+        */
+
     }
 
     void OnRun(InputAction.CallbackContext context)
@@ -200,62 +306,40 @@ public class Player1Controller : MonoBehaviour
     private void Update()
     {
 
-        //if (Physics.Raycast(this.gameObject.transform.position, this.gameObject.transform.up, out hit))
-        if (GrappleSpawn.GetComponent<GrappleScript>().foundTarget && !canGrapple)
-            {
-            var step = 15.0f * Time.deltaTime; // calculate distance to move
-            //Vector3 targetPos = hit.point - transform.position;
 
-            Vector3 targetPos = GrappleSpawn.GetComponent<GrappleScript>().targetPos - transform.position;
+        switch (state)
+        {
+            default:
+            case State.Normal:
 
-            //grappleTarget = hit.point;
-            grappleTarget = GrappleSpawn.GetComponent<GrappleScript>().targetPos;
-            canGrapple = true;
-            tObject = GrappleSpawn.GetComponent<GrappleScript>().targetObject;
+                /*
+                if (isRunPressed)
+                {
+                    characterController.Move(currentRunMovement * Time.deltaTime);
+                }
+                else
+                {
+                    characterController.Move(currentMovement * Time.deltaTime);
+                }
+                */
+
+                HandleMovement();
+                HandleGravity();
+                HandleJump();
+                HandleGrapple();
+
+                break;
+            case State.GrappleFlyingPlayer:
+
+                HandleGrappleMovement();
+                break;
 
         }
 
-        
 
         //transform.Translate(new Vector3(10.0f, 0.0f, 0.0f) * Time.deltaTime, Space.World);
 
-        if (isRunPressed)
-        {
-            characterController.Move(currentRunMovement * Time.deltaTime);
-        }
-        else
-        {
-            characterController.Move(currentMovement * Time.deltaTime);
-        }
 
-
-        if (!isGrapplePressed)
-        {
-            HandleGravity();
-        }
-        
-        HandleJump();
-        HandleGrapple();
-
-
-        
-
-        if (canGrapple && isGrapplePressed)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, tObject.transform.position, 200.0f * Time.deltaTime);
-
-            grappleInProgress = true;
-
-        }
-        
-
-        //float grappleDist = Vector3.Distance(transform.position, grappleTarget);
-        if (Vector3.Distance(transform.position, grappleTarget) <= 2.0f){
-            grappleInProgress = false;
-            isGrapplePressed = false;
-            canGrapple = false;
-            GrappleSpawn.GetComponent<GrappleScript>().foundTarget = false;
-        }
 
     }
 
@@ -269,5 +353,4 @@ public class Player1Controller : MonoBehaviour
     {
         playerInput.Player.Disable();
     }
-
 }
