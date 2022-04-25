@@ -6,6 +6,7 @@ TagManager:
   tags:
   - New tag
   - Level
+  - Wall
   layers:
   - Default
   - TransparentFX

@@ -17,8 +17,6 @@ public class PlayerController : MonoBehaviour
     bool isRunPressed;
     CharacterController characterController;
 
-    //float walkSpeed = 10.0f;
-    //float runSpeed = 16.0f;
     float walkSpeed = 14.0f;
     float runSpeed = 22.0f;
 
@@ -29,10 +27,8 @@ public class PlayerController : MonoBehaviour
     //jumping variables
     bool isJumpPressed = false;
     float initialJumpVelocity;
-    //float maxJumpHeight = 3.0f;
-    //float maxJumpHeight = 6.0f;
     float maxJumpHeight = 9.0f;
-    float maxJumpTime = 0.5f;
+    float maxJumpTime = 0.7f;
     bool isJumping = false;
 
 
@@ -68,6 +64,11 @@ public class PlayerController : MonoBehaviour
 
     private float grappleSize;
 
+    //wall jumping variables
+    bool isContactingWall = false;
+    bool isWallJumping = false;
+
+
     private enum State
     {
         Normal, GrappleThrown, GrappleFlyingPlayer
@@ -93,7 +94,6 @@ public class PlayerController : MonoBehaviour
         playerInput.Player.Grapple.started += OnGrapple;
         playerInput.Player.Grapple.canceled += OnGrapple;
 
-        //playerInput.Player.Grapple.performed += OnGrapple;
 
         playerInput.Player.Jump.started += OnJump;
         playerInput.Player.Jump.canceled += OnJump;
@@ -169,10 +169,7 @@ public class PlayerController : MonoBehaviour
         grapplerTransform.LookAt(grapplePosition);
         float grappleThrowSpeed = 50f;
         grappleSize += grappleThrowSpeed * Time.deltaTime;
-        //grapplerTransform.localScale = new Vector3(grappleSize,1,1);
         grapplerTransform.localScale = new Vector3(1, 1, grappleSize);
-        //grapplerTransform.lossyScale = new Vector3(grappleSize, 1, 1);
-        //grapplerTransform.localScale = new Vector3(1,grappleSize, 1);
 
         if (grappleSize >= Vector3.Distance(transform.position,grapplePosition))
         {
@@ -211,17 +208,19 @@ public class PlayerController : MonoBehaviour
     void OnGrapple(InputAction.CallbackContext context)
     {
         isGrapplePressed = context.ReadValueAsButton();
-        //Debug.Log("Aiming..." + context.phase);
     }
 
 
     void HandleJump()
     {
         if (!isJumping && characterController.isGrounded && isJumpPressed)
+        //if ((!isJumping && characterController.isGrounded && isJumpPressed) ||(!characterController.isGrounded && isJumpPressed && isContactingWall))
         {
+
             isJumping = true;
             currentMovement.y = initialJumpVelocity;
             currentRunMovement.y = initialJumpVelocity;
+
         }
         else if (!isJumpPressed && isJumping && characterController.isGrounded)
         {
@@ -255,8 +254,16 @@ public class PlayerController : MonoBehaviour
         else
         {
 
-            currentMovement.y += gravity * Time.deltaTime;
-            currentRunMovement.y += gravity * Time.deltaTime;
+            if (isContactingWall && currentMovement.y < 0)
+            {
+                currentMovement.y += gravity * 0.1f * Time.deltaTime;
+                currentRunMovement.y += gravity * 0.1f * Time.deltaTime;
+
+            }
+            else {
+                currentMovement.y += gravity * Time.deltaTime;
+                currentRunMovement.y += gravity * Time.deltaTime;
+            }
 
         }
     }
@@ -270,17 +277,18 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement()
     {
-        currentMovement.x = currentMovementInput.x * walkSpeed; ;
-        //currentMovement.z = currentMovementInput.y;
-        currentRunMovement.x = currentMovementInput.x * runSpeed;
-        isMovementPressed = currentMovementInput.x != 0 || currentMovementInput.y != 0;
 
-        //Apply Momentum
-        currentMovement.x += characterVelocityMomentum.x;
-        currentRunMovement.x += characterVelocityMomentum.x;
+        if (!isWallJumping)
+        {
+            currentMovement.x = currentMovementInput.x * walkSpeed; ;
+            //currentMovement.z = currentMovementInput.y;
+            currentRunMovement.x = currentMovementInput.x * runSpeed;
+            isMovementPressed = currentMovementInput.x != 0 || currentMovementInput.y != 0;
 
-        //currentMovement.y += characterVelocityMomentum.y;
-        //currentRunMovement.y += characterVelocityMomentum.y;
+            //Apply Momentum
+            currentMovement.x += characterVelocityMomentum.x;
+            currentRunMovement.x += characterVelocityMomentum.x;
+        }
 
 
         if (isRunPressed)
@@ -291,12 +299,12 @@ public class PlayerController : MonoBehaviour
         {
             characterController.Move(currentMovement * Time.deltaTime);
         }
-
+        
         
         //Dampen Momentum
         if (characterVelocityMomentum.magnitude >= 0f)
         {
-            //float momentumDrag = 3.5f;
+
             float momentumDrag = 3.25f;
             characterVelocityMomentum -= characterVelocityMomentum * momentumDrag * Time.deltaTime;
             if (characterVelocityMomentum.magnitude < .0f)
@@ -330,6 +338,17 @@ public class PlayerController : MonoBehaviour
                 HandleGravity();
                 HandleJump();
                 HandleGrapple();
+
+                if (characterController.collisionFlags == CollisionFlags.None)
+                {
+                    isContactingWall = false;
+                }
+
+                if (characterController.isGrounded)
+                {
+                    isContactingWall = false;
+                    isWallJumping = false;
+                }
                 break;
 
             case State.GrappleThrown:
@@ -347,6 +366,34 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+
+        //if (!characterController.isGrounded && hit.normal.y < 0.1f)
+         if (hit.collider.CompareTag("Wall") && !characterController.isGrounded && characterController.collisionFlags == CollisionFlags.Sides)
+         {
+
+            Debug.Log("wall!");
+            isContactingWall = true;
+            //Debug.DrawRay(hit.point, hit.normal, Color.red, 1.25f);
+            Debug.DrawRay(hit.point, hit.normal, Color.red, 1.25f);
+
+            if (isJumpPressed)
+            {
+                isJumping = true;
+                isWallJumping = true;
+                currentMovement.y = initialJumpVelocity;
+                currentRunMovement.y = initialJumpVelocity;
+
+                //moveDirection = hit.normal
+                //currentMovement.x = hit.normal;
+                currentMovement.x = hit.normal.x * 20f;
+                currentRunMovement.x = hit.normal.x * 15f;
+            }
+         }
+    }
+    
 
     void OnEnable()
     {
