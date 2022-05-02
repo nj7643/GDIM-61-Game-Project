@@ -17,11 +17,14 @@ public class PlayerController : MonoBehaviour
     bool isRunPressed;
     CharacterController characterController;
 
-    float walkSpeed = 14.0f;
-    float runSpeed = 22.0f;
+    //float walkSpeed = 14.0f;
+    //float runSpeed = 22.0f;
+    float walkSpeed = 16.0f;
+    float runSpeed = 24.0f;
 
     //gravity
     float gravity = -9.8f;
+    //float gravity = -9f;
     float groundedGravity = -0.05f;
 
     //jumping variables
@@ -80,7 +83,6 @@ public class PlayerController : MonoBehaviour
 
         m_CurrentLaunchForce = m_MinLaunchForce;
         m_AimSlider.value = m_MinLaunchForce;
-        //CapsuleRigidbody = GetComponent<Rigidbody>();
 
         playerInput = new PlayerInputActions();
         characterController = GetComponent<CharacterController>();
@@ -179,8 +181,6 @@ public class PlayerController : MonoBehaviour
 
     void HandleGrapple()
     {
-
-        //if (!isJumping && characterController.isGrounded && isGrapplePressed)
         if (!isJumping && isGrapplePressed)
         {
 
@@ -189,7 +189,6 @@ public class PlayerController : MonoBehaviour
             {
                 debugHitTransform.position = hit.point;
                 grapplePosition = hit.point;
-                //state = State.GrappleFlyingPlayer;
                 grappleSize = 0f;
                 grapplerTransform.gameObject.SetActive(true);
                 grapplerTransform.localScale = Vector3.zero;
@@ -370,13 +369,11 @@ public class PlayerController : MonoBehaviour
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
 
-        //if (!characterController.isGrounded && hit.normal.y < 0.1f)
          if (hit.collider.CompareTag("Wall") && !characterController.isGrounded && characterController.collisionFlags == CollisionFlags.Sides)
          {
 
             Debug.Log("wall!");
             isContactingWall = true;
-            //Debug.DrawRay(hit.point, hit.normal, Color.red, 1.25f);
             Debug.DrawRay(hit.point, hit.normal, Color.red, 1.25f);
 
             if (isJumpPressed)
@@ -386,8 +383,7 @@ public class PlayerController : MonoBehaviour
                 currentMovement.y = initialJumpVelocity;
                 currentRunMovement.y = initialJumpVelocity;
 
-                //moveDirection = hit.normal
-                //currentMovement.x = hit.normal;
+
                 currentMovement.x = hit.normal.x * 20f;
                 currentRunMovement.x = hit.normal.x * 15f;
             }
