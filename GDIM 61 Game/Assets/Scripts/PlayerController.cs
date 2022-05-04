@@ -305,11 +305,24 @@ public class PlayerController : MonoBehaviour
         {
 
             float momentumDrag = 3.25f;
+            if ((characterController.isGrounded && currentMovementInput == Vector2.zero))
+            {
+                //momentumDrag = 30.25f;
+                momentumDrag = 5.25f;
+            }
+
+            //float momentumDrag = 30.25f;
             characterVelocityMomentum -= characterVelocityMomentum * momentumDrag * Time.deltaTime;
             if (characterVelocityMomentum.magnitude < .0f)
             {
                 characterVelocityMomentum = Vector2.zero;
             }
+
+            if ((characterController.isGrounded && currentMovementInput.x < 0f && characterVelocityMomentum.x > 0f))
+            {
+                characterVelocityMomentum.x += currentMovementInput.x;
+            }
+
         }
     }
 
