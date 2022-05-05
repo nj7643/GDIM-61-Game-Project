@@ -72,6 +72,17 @@ public class PlayerController : MonoBehaviour
     bool isWallJumping = false;
 
 
+    //slippery surfaces
+    private bool isSlippery = false;
+
+    //sticky surfaces
+    private bool isSticky = false;
+
+
+    //bouncy surfaces
+    private bool isBouncy = false;
+
+
     private enum State
     {
         Normal, GrappleThrown, GrappleFlyingPlayer
@@ -184,7 +195,7 @@ public class PlayerController : MonoBehaviour
         if (!isJumping && isGrapplePressed)
         {
 
-            Debug.Log("Aiming...");
+            //Debug.Log("Aiming...");
             if (Physics.Raycast(GrappleSpawn.transform.position, GrappleSpawn.transform.right, out RaycastHit hit))
             {
                 debugHitTransform.position = hit.point;
@@ -199,7 +210,7 @@ public class PlayerController : MonoBehaviour
 
         else if (!isGrapplePressed)
         {
-            Debug.Log("STOPPED GRAPPLING");
+            //Debug.Log("STOPPED GRAPPLING");
         }
 
     }
@@ -276,6 +287,7 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement()
     {
+        //Debug.Log(currentMovement.y);
 
         if (!isWallJumping)
         {
@@ -289,7 +301,7 @@ public class PlayerController : MonoBehaviour
             currentRunMovement.x += characterVelocityMomentum.x;
         }
 
-
+        
         if (isRunPressed)
         {
             characterController.Move(currentRunMovement * Time.deltaTime);
@@ -298,14 +310,75 @@ public class PlayerController : MonoBehaviour
         {
             characterController.Move(currentMovement * Time.deltaTime);
         }
-        
-        
+
+        Debug.Log("momentum:" + characterVelocityMomentum);
+        //moving left
+        if (isSlippery && currentMovementInput.x < 0f)
+        {
+            if (characterVelocityMomentum.x > 0f)
+            {
+                //characterVelocityMomentum = new Vector2(characterVelocityMomentum.x -(characterVelocityMomentum.x * .1f * Time.deltaTime), 0);
+                //characterVelocityMomentum.x += characterVelocityMomentum.x * .4f * Time.deltaTime;
+                characterVelocityMomentum.x -= 4f * Time.deltaTime;
+                //characterVelocityMomentum.x *= 1.25f * Time.deltaTime;
+            }
+            else
+            {
+                //characterVelocityMomentum = new Vector2(characterVelocityMomentum.x - .3f, 0);
+                //characterVelocityMomentum.x -= 10f * Time.deltaTime;
+                characterVelocityMomentum.x -= 200f * Time.deltaTime;
+                //characterVelocityMomentum.x *= 1.25f;
+            }
+
+            
+            if (characterVelocityMomentum.x > 45f)
+            {
+                characterVelocityMomentum.x = 45f;
+            }
+            if (characterVelocityMomentum.x < -45f)
+            {
+                characterVelocityMomentum.x = -45f;
+            }
+            
+
+        }
+
+        //moving right
+         if (isSlippery && currentMovementInput.x > 0f)
+        {
+
+            if (characterVelocityMomentum.x < 0f)
+            {
+                //characterVelocityMomentum = new Vector2(characterVelocityMomentum.x + (-characterVelocityMomentum.x * .1f * Time.deltaTime), 0);
+                //characterVelocityMomentum.x -= characterVelocityMomentum.x * .4f * Time.deltaTime;
+                characterVelocityMomentum.x += 4f * Time.deltaTime;
+            }
+            else
+            {
+
+                //characterVelocityMomentum = new Vector2(characterVelocityMomentum.x + 3f, 0);
+                //characterVelocityMomentum.x += 3f * Time.deltaTime;
+                //characterVelocityMomentum.x += 10f * Time.deltaTime;
+                characterVelocityMomentum.x += 200f * Time.deltaTime;
+                //characterVelocityMomentum.x *= 1.25f;
+            }
+            if (characterVelocityMomentum.x > 45f)
+            {
+                characterVelocityMomentum.x = 45f;
+            }
+            if (characterVelocityMomentum.x < -45f)
+            {
+                characterVelocityMomentum.x = -45f;
+            }
+        }
+
+
         //Dampen Momentum
-        if (characterVelocityMomentum.magnitude >= 0f)
+        if (characterVelocityMomentum.magnitude >= 0f || isSlippery && currentMovementInput.x == 0f)
         {
 
             float momentumDrag = 3.25f;
-            if ((characterController.isGrounded && currentMovementInput == Vector2.zero))
+            if ((characterController.isGrounded && currentMovementInput == Vector2.zero) && !isSlippery)
             {
                 //momentumDrag = 30.25f;
                 momentumDrag = 5.25f;
@@ -318,10 +391,12 @@ public class PlayerController : MonoBehaviour
                 characterVelocityMomentum = Vector2.zero;
             }
 
+            /*
             if ((characterController.isGrounded && currentMovementInput.x < 0f && characterVelocityMomentum.x > 0f))
             {
                 characterVelocityMomentum.x += currentMovementInput.x;
             }
+            */
 
         }
     }
@@ -401,6 +476,37 @@ public class PlayerController : MonoBehaviour
                 currentRunMovement.x = hit.normal.x * 15f;
             }
          }
+         if (hit.collider.CompareTag("Slippery") && characterController.isGrounded)
+        {
+            isSlippery = true;
+        }
+        else
+        {
+            if (characterController.isGrounded)
+            {
+                isSlippery = false;
+            }
+        }
+
+        if (hit.collider.CompareTag("Sticky") && isSticky == false)
+        {
+            isSticky = true;
+            characterVelocityMomentum.x = 0f;
+            walkSpeed = 2.0f;
+            runSpeed = 3.0f;
+            maxJumpHeight = 2.0f;
+            maxJumpTime = 0.35f;
+            SetupJumpVariables();
+        }
+        else if( isSticky == true && !hit.collider.CompareTag("Sticky"))
+        {
+            isSticky = false;
+            walkSpeed = 16.0f;
+            runSpeed = 24.0f;
+            maxJumpHeight = 9.0f;
+            maxJumpTime = 0.7f;
+            SetupJumpVariables();
+        }
     }
     
 
