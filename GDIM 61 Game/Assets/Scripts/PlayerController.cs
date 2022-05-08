@@ -83,6 +83,9 @@ public class PlayerController : MonoBehaviour
     private bool isBouncy = false;
 
 
+    //for debugging
+    private bool isRespawnPressed = false;
+
     private enum State
     {
         Normal, GrappleThrown, GrappleFlyingPlayer
@@ -116,11 +119,29 @@ public class PlayerController : MonoBehaviour
         playerInput.Player.GrappleAim.performed += OnAimInput;
 
 
+        playerInput.Player.Respawn.started += OnRespawn;
+        playerInput.Player.Respawn.canceled += OnRespawn;
+
+
         state = State.Normal;
         SetupJumpVariables();
         grapplerTransform.gameObject.SetActive(false);
     }
 
+
+
+    void OnRespawn(InputAction.CallbackContext context)
+    {
+        isRespawnPressed = context.ReadValueAsButton();
+    }
+
+    void HandleRespawn()
+    {
+        if (isRespawnPressed)
+        {
+            transform.position = new Vector3(0, 1.5f, 0);
+        }
+    }
 
     void OnAimInput(InputAction.CallbackContext context)
     {
@@ -312,15 +333,24 @@ public class PlayerController : MonoBehaviour
         }
 
         Debug.Log("momentum:" + characterVelocityMomentum);
+        
         //moving left
         if (isSlippery && currentMovementInput.x < 0f)
         {
-            if (characterVelocityMomentum.x > 0f)
+            if (characterVelocityMomentum.x > 0f && characterController.isGrounded)
             {
                 //characterVelocityMomentum = new Vector2(characterVelocityMomentum.x -(characterVelocityMomentum.x * .1f * Time.deltaTime), 0);
                 //characterVelocityMomentum.x += characterVelocityMomentum.x * .4f * Time.deltaTime;
                 characterVelocityMomentum.x -= 4f * Time.deltaTime;
                 //characterVelocityMomentum.x *= 1.25f * Time.deltaTime;
+            }
+            else if (characterVelocityMomentum.x > 0f)
+            {
+                characterVelocityMomentum.x -= 40f * Time.deltaTime;
+                if (characterVelocityMomentum.x < 0f)
+                {
+                    characterVelocityMomentum.x = 0f;
+                }
             }
             else
             {
@@ -344,15 +374,25 @@ public class PlayerController : MonoBehaviour
         }
 
         //moving right
-         if (isSlippery && currentMovementInput.x > 0f)
+         if (isSlippery  && currentMovementInput.x > 0f)
         {
 
-            if (characterVelocityMomentum.x < 0f)
+            if (characterVelocityMomentum.x < 0f && characterController.isGrounded)
             {
                 //characterVelocityMomentum = new Vector2(characterVelocityMomentum.x + (-characterVelocityMomentum.x * .1f * Time.deltaTime), 0);
                 //characterVelocityMomentum.x -= characterVelocityMomentum.x * .4f * Time.deltaTime;
                 characterVelocityMomentum.x += 4f * Time.deltaTime;
             }
+
+            else if (characterVelocityMomentum.x < 0f)
+            {
+                characterVelocityMomentum.x += 40f * Time.deltaTime;
+                if (characterVelocityMomentum.x > 0f)
+                {
+                    characterVelocityMomentum.x = 0f;
+                }
+            }
+
             else
             {
 
@@ -425,6 +465,8 @@ public class PlayerController : MonoBehaviour
                 HandleGravity();
                 HandleJump();
                 HandleGrapple();
+
+                HandleRespawn();
 
                 if (characterController.collisionFlags == CollisionFlags.None)
                 {
