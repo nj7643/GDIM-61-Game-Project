@@ -7,7 +7,9 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
 
-    PlayerInputActions playerInput;
+    //PlayerInputActions playerInput;
+
+    CursorController playerInput;
 
     Vector2 currentMovementInput;
     Vector3 currentMovement;
@@ -98,7 +100,9 @@ public class PlayerController : MonoBehaviour
         m_CurrentLaunchForce = m_MinLaunchForce;
         m_AimSlider.value = m_MinLaunchForce;
 
-        playerInput = new PlayerInputActions();
+        //playerInput = new PlayerInputActions();
+        playerInput = new CursorController();
+
         characterController = GetComponent<CharacterController>();
         playerInput.Player.Move.started += OnMovementInput;
         playerInput.Player.Move.canceled += OnMovementInput;

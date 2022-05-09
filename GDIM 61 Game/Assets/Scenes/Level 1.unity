@@ -1788,7 +1788,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &691240935
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1801,11 +1801,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 571122d1361045e449e95ffa478aeb84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerInput: {fileID: 0}
+  playerInput: {fileID: 691240937}
   cursorTransform: {fileID: 1150318259}
   canvas: {fileID: 1252776165}
   canvasRectTransform: {fileID: 1252776166}
-  cursorSpeed: 0
+  cursorSpeed: 1500
+  padding: 35
 --- !u!4 &691240936
 Transform:
   m_ObjectHideFlags: 0
@@ -1833,8 +1834,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Actions: {fileID: -944628639613478452, guid: f59e68b9e1af8d64da6c0293d06de14b, type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
+  m_NotificationBehavior: 3
+  m_UIInputModule: {fileID: 737571636}
   m_DeviceLostEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -1844,7 +1845,79 @@ MonoBehaviour:
   m_ControlsChangedEvent:
     m_PersistentCalls:
       m_Calls: []
-  m_ActionEvents: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c3021fc4-d508-47e4-8fd9-5f84597d5b13
+    m_ActionName: Player/Move[/SwitchProControllerHID/leftStick,/SwitchProControllerHID1/leftStick,/SwitchProControllerHID2/leftStick,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 721049b1-b1f5-421f-9ed9-33dde522339a
+    m_ActionName: Player/Look[/SwitchProControllerHID/rightStick,/SwitchProControllerHID1/rightStick,/SwitchProControllerHID2/rightStick,/Mouse/delta]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: b40feb34-c80d-47ed-bfd1-581306656a25
+    m_ActionName: Player/Fire[/SwitchProControllerHID/rightTrigger,/SwitchProControllerHID1/rightTrigger,/SwitchProControllerHID2/rightTrigger,/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 127c33f2-2fed-44da-90a3-19d77616b9ea
+    m_ActionName: Player/Jump[/Keyboard/space,/SwitchProControllerHID/buttonSouth,/SwitchProControllerHID1/buttonSouth,/SwitchProControllerHID2/buttonSouth]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 198904bc-84ee-46b6-ad53-2909fe66d0d5
+    m_ActionName: Player/Run[/Keyboard/leftShift,/SwitchProControllerHID/rightTrigger,/SwitchProControllerHID1/rightTrigger,/SwitchProControllerHID2/rightTrigger]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: af2f27b8-00cf-4bf5-aafe-f343f7f30ba0
+    m_ActionName: Player/Grapple[/Mouse/leftButton,/SwitchProControllerHID/rightShoulder,/SwitchProControllerHID1/rightShoulder,/SwitchProControllerHID2/rightShoulder]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 08356385-85ee-485c-a2e9-7d0419ac9646
+    m_ActionName: Player/Grapple Aim[/SwitchProControllerHID/rightStick,/SwitchProControllerHID1/rightStick,/SwitchProControllerHID2/rightStick]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 5a03b208-14f8-4fed-9952-7664bcc9f793
+    m_ActionName: Player/Respawn[/SwitchProControllerHID/leftTrigger,/SwitchProControllerHID1/leftTrigger,/SwitchProControllerHID2/leftTrigger]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 91be55dc-42a5-4956-9ee9-cb89b86f34ab
+    m_ActionName: UI/Navigate[/SwitchProControllerHID/leftStick/up,/SwitchProControllerHID1/leftStick/up,/SwitchProControllerHID2/leftStick/up,/SwitchProControllerHID/rightStick/up,/SwitchProControllerHID1/rightStick/up,/SwitchProControllerHID2/rightStick/up,/SwitchProControllerHID/leftStick/down,/SwitchProControllerHID1/leftStick/down,/SwitchProControllerHID2/leftStick/down,/SwitchProControllerHID/rightStick/down,/SwitchProControllerHID1/rightStick/down,/SwitchProControllerHID2/rightStick/down,/SwitchProControllerHID/leftStick/left,/SwitchProControllerHID1/leftStick/left,/SwitchProControllerHID2/leftStick/left,/SwitchProControllerHID/rightStick/left,/SwitchProControllerHID1/rightStick/left,/SwitchProControllerHID2/rightStick/left,/SwitchProControllerHID/leftStick/right,/SwitchProControllerHID1/leftStick/right,/SwitchProControllerHID2/leftStick/right,/SwitchProControllerHID/rightStick/right,/SwitchProControllerHID1/rightStick/right,/SwitchProControllerHID2/rightStick/right,/SwitchProControllerHID/dpad,/SwitchProControllerHID1/dpad,/SwitchProControllerHID2/dpad,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 5571d075-0da0-4c6c-b18d-6f39aafc60e9
+    m_ActionName: UI/Submit[/Keyboard/enter]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 3413afc4-863d-4fa4-9cb6-bcec7ab3e134
+    m_ActionName: UI/Cancel[/Keyboard/escape]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 3bad6849-95da-4be0-acf3-817e8e95b6c6
+    m_ActionName: UI/Point[/Mouse/position]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 249ea2ce-a296-4fdc-890b-996e33510c1f
+    m_ActionName: UI/Click[/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 2284f0f8-d873-4e13-b679-66e1f51aa48e
+    m_ActionName: UI/ScrollWheel[/Mouse/scroll]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: a323ab11-a303-40e8-b4be-844cae25e14e
+    m_ActionName: UI/MiddleClick[/Mouse/middleButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: e89e4018-7793-4b9b-9bf2-8849f26525c9
+    m_ActionName: UI/RightClick[/Mouse/rightButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 1374c0d2-582b-46a3-9c9a-eea1f35b09b7
+    m_ActionName: UI/TrackedDevicePosition
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 8d825872-4258-4879-a88b-bbf77a53852c
+    m_ActionName: UI/TrackedDeviceOrientation
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -1943,6 +2016,7 @@ MonoBehaviour:
   canvas: {fileID: 0}
   canvasRectTransform: {fileID: 0}
   cursorSpeed: 0
+  padding: 35
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -2158,16 +2232,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 737571635}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: 4dad49b4e88932d439b1d40c424d0268, type: 3}
+  m_PointAction: {fileID: 0}
+  m_MoveAction: {fileID: 0}
+  m_SubmitAction: {fileID: 0}
+  m_CancelAction: {fileID: 0}
+  m_LeftClickAction: {fileID: 0}
+  m_MiddleClickAction: {fileID: 0}
+  m_RightClickAction: {fileID: 0}
+  m_ScrollWheelAction: {fileID: 0}
+  m_TrackedDevicePositionAction: {fileID: 0}
+  m_TrackedDeviceOrientationAction: {fileID: 0}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
 --- !u!114 &737571637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3696,7 +3779,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1252776163
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3726,10 +3809,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -3748,7 +3831,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 963194227}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 1
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -4551,7 +4634,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Actions: {fileID: -944628639613478452, guid: 0d3b5c566687bcc4ea49c5ce994b5491, type: 3}
   m_NotificationBehavior: 2
-  m_UIInputModule: {fileID: 0}
+  m_UIInputModule: {fileID: 737571636}
   m_DeviceLostEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -4565,32 +4648,32 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 81c94a0e-f6eb-4a46-b0be-48d47ea1532b
-    m_ActionName: Player/Jump[/Keyboard/space]
+    m_ActionName: Player/Jump[/Keyboard/space,/SwitchProControllerHID/buttonSouth,/SwitchProControllerHID1/buttonSouth,/SwitchProControllerHID2/buttonSouth,/SwitchProControllerHID3/buttonSouth]
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 96319b87-1234-48c7-9a62-6b98263d7990
-    m_ActionName: Player/New action
+    m_ActionName: Player/Move[/Keyboard/a,/Keyboard/d,/SwitchProControllerHID/leftStick,/SwitchProControllerHID1/leftStick,/SwitchProControllerHID2/leftStick,/SwitchProControllerHID3/leftStick]
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 5cc24ede-7e8e-4fe1-95c2-fc99bb6033f9
-    m_ActionName: Player/New action
+    m_ActionName: Player/Run[/Keyboard/leftShift,/SwitchProControllerHID/rightTrigger,/SwitchProControllerHID1/rightTrigger,/SwitchProControllerHID2/rightTrigger,/SwitchProControllerHID3/rightTrigger]
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 0940149c-18ac-4573-977c-620985250ffd
-    m_ActionName: Player/New action
+    m_ActionName: Player/Grapple[/Mouse/leftButton,/SwitchProControllerHID/rightShoulder,/SwitchProControllerHID1/rightShoulder,/SwitchProControllerHID2/rightShoulder,/SwitchProControllerHID3/rightShoulder]
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 0e02b963-56e7-4cb2-b417-9ae20bd11b08
-    m_ActionName: Player/Grapple Aim
+    m_ActionName: Player/Grapple Aim[/SwitchProControllerHID/rightStick,/SwitchProControllerHID1/rightStick,/SwitchProControllerHID2/rightStick,/SwitchProControllerHID3/rightStick]
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: cc0f4f3d-5903-4571-a692-37f3a7c16487
-    m_ActionName: Player/Respawn[/SwitchProControllerHID/leftTrigger,/SwitchProControllerHID1/leftTrigger,/SwitchProControllerHID2/leftTrigger]
+    m_ActionName: Player/Respawn[/SwitchProControllerHID/leftTrigger,/SwitchProControllerHID1/leftTrigger,/SwitchProControllerHID2/leftTrigger,/SwitchProControllerHID3/leftTrigger]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 963194227}
 --- !u!143 &1421632329
 CharacterController:
   m_ObjectHideFlags: 0
@@ -6418,7 +6501,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 2
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 963194227}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
