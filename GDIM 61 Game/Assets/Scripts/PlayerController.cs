@@ -19,8 +19,6 @@ public class PlayerController : MonoBehaviour
     bool isRunPressed;
     CharacterController characterController;
 
-    //float walkSpeed = 14.0f;
-    //float runSpeed = 22.0f;
     float walkSpeed = 16.0f;
     float runSpeed = 24.0f;
 
@@ -163,41 +161,10 @@ public class PlayerController : MonoBehaviour
     {
         currentAimInput = context.ReadValue<Vector2>();
 
-
-        //m_AimSlider.value = currentAimInput.x * 30.0f;
         m_AimSlider.value = Mathf.Sqrt((Mathf.Pow(currentAimInput.x, 2.0f) + Mathf.Pow(currentAimInput.y, 2.0f))) * 30.0f;
         //ArrowDirection.transform.Rotate(0, 0, 4.0f, Space.Self);
 
         //ArrowDirection.transform.eulerAngles = new Vector3(ArrowDirection.transform.eulerAngles.x, Mathf.Atan2(currentAimInput.x, currentAimInput.y) * Mathf.Rad2Deg, ArrowDirection.transform.eulerAngles.z);
-        
-        
-        //float speedRot = 1.0f;
-        //ArrowDirection.transform.eulerAngles = new Vector3(ArrowDirection.transform.eulerAngles.x, ArrowDirection.transform.eulerAngles.y, -Mathf.Atan2(currentAimInput.x, currentAimInput.y) * Mathf.Rad2Deg - 270);
-        //ArrowDirection.transform.LookAt(speedRot * new Vector3(Input.mousePosition.x - Screen.width / 2, Input.mousePosition.y - Screen.height / 2, 0));
-        //ArrowDirection.transform.LookAt(speedRot * new Vector3(0, Input.mousePosition.y - Screen.height / 2, Input.mousePosition.x - Screen.width / 2));
-        //ArrowDirection.transform.LookAt(speedRot * new Vector3(Input.mousePosition.y - Screen.height / 2, 0, Input.mousePosition.x - Screen.width / 2));
-        //ArrowDirection.transform.eulerAngles = new Vector3(ArrowDirection.transform.eulerAngles.x, ArrowDirection.transform.eulerAngles.y, -Mathf.Atan2(Input.mousePosition.x - Screen.width / 2, Input.mousePosition.y - Screen.height / 2) * Mathf.Rad2Deg - 270);
-
-        /*
-
-        //The distance from your player to the camera
-        float camToPlayerDist = Vector3.Distance(transform.position, Camera.main.transform.position);
-
-        //This is the world position of your mouse
-        Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, camToPlayerDist));
-
-        //The direction your mouse is pointing in with relation to your player
-        Vector2 direction = mouseWorldPosition - (Vector2)transform.position;
-
-        //the angle of your direction
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-        //Setting the rotation to the transform.
-        ArrowDirection.transform.rotation = Quaternion.Euler(0, 0, angle);
-        */
-
-
-
     }
 
 
@@ -219,7 +186,7 @@ public class PlayerController : MonoBehaviour
         //direction angle
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-        //rotatiing the transform based on angle
+        //rotating the transform based on angle
         ArrowDirection.transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
@@ -312,6 +279,7 @@ public class PlayerController : MonoBehaviour
         //if ((!isJumping && characterController.isGrounded && isJumpPressed) ||(!characterController.isGrounded && isJumpPressed && isContactingWall))
         {
 
+            CreateDustTrail();
             isJumping = true;
             currentMovement.y = initialJumpVelocity;
             currentRunMovement.y = initialJumpVelocity;
@@ -333,7 +301,7 @@ public class PlayerController : MonoBehaviour
     void OnJump(InputAction.CallbackContext context)
     {
         isJumpPressed = context.ReadValueAsButton();
-        Debug.Log("Jump" + context.phase);
+        //Debug.Log("Jump" + context.phase);
     }
 
 
@@ -351,6 +319,7 @@ public class PlayerController : MonoBehaviour
 
             if (isContactingWall && currentMovement.y < 0)
             {
+                CreateDustTrail();
                 currentMovement.y += gravity * 0.1f * Time.deltaTime;
                 currentRunMovement.y += gravity * 0.1f * Time.deltaTime;
 
@@ -590,12 +559,13 @@ public class PlayerController : MonoBehaviour
          if (hit.collider.CompareTag("Wall") && !characterController.isGrounded && characterController.collisionFlags == CollisionFlags.Sides)
          {
 
-            Debug.Log("wall!");
+            //Debug.Log("wall!");
             isContactingWall = true;
             Debug.DrawRay(hit.point, hit.normal, Color.red, 1.25f);
 
             if (isJumpPressed)
             {
+                CreateDustTrail();
                 isJumping = true;
                 isWallJumping = true;
                 currentMovement.y = initialJumpVelocity;
