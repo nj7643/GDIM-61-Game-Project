@@ -87,6 +87,18 @@ public class PlayerController : MonoBehaviour
 
     //for debugging
     private bool isRespawnPressed = false;
+    public Camera cam;
+    Vector3 mousePos;
+    [SerializeField]
+    private RectTransform cursorTransform;
+
+    [SerializeField]
+    private CursorScript cursorScript;
+
+    //particle system
+    public ParticleSystem dust;
+    private bool facingRight = true;
+
 
     private enum State
     {
@@ -157,11 +169,59 @@ public class PlayerController : MonoBehaviour
         //ArrowDirection.transform.Rotate(0, 0, 4.0f, Space.Self);
 
         //ArrowDirection.transform.eulerAngles = new Vector3(ArrowDirection.transform.eulerAngles.x, Mathf.Atan2(currentAimInput.x, currentAimInput.y) * Mathf.Rad2Deg, ArrowDirection.transform.eulerAngles.z);
-        ArrowDirection.transform.eulerAngles = new Vector3(ArrowDirection.transform.eulerAngles.x, ArrowDirection.transform.eulerAngles.y, -Mathf.Atan2(currentAimInput.x, currentAimInput.y) * Mathf.Rad2Deg - 270);
+        
+        
+        //float speedRot = 1.0f;
+        //ArrowDirection.transform.eulerAngles = new Vector3(ArrowDirection.transform.eulerAngles.x, ArrowDirection.transform.eulerAngles.y, -Mathf.Atan2(currentAimInput.x, currentAimInput.y) * Mathf.Rad2Deg - 270);
+        //ArrowDirection.transform.LookAt(speedRot * new Vector3(Input.mousePosition.x - Screen.width / 2, Input.mousePosition.y - Screen.height / 2, 0));
+        //ArrowDirection.transform.LookAt(speedRot * new Vector3(0, Input.mousePosition.y - Screen.height / 2, Input.mousePosition.x - Screen.width / 2));
+        //ArrowDirection.transform.LookAt(speedRot * new Vector3(Input.mousePosition.y - Screen.height / 2, 0, Input.mousePosition.x - Screen.width / 2));
+        //ArrowDirection.transform.eulerAngles = new Vector3(ArrowDirection.transform.eulerAngles.x, ArrowDirection.transform.eulerAngles.y, -Mathf.Atan2(Input.mousePosition.x - Screen.width / 2, Input.mousePosition.y - Screen.height / 2) * Mathf.Rad2Deg - 270);
+
+        /*
+
+        //The distance from your player to the camera
+        float camToPlayerDist = Vector3.Distance(transform.position, Camera.main.transform.position);
+
+        //This is the world position of your mouse
+        Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, camToPlayerDist));
+
+        //The direction your mouse is pointing in with relation to your player
+        Vector2 direction = mouseWorldPosition - (Vector2)transform.position;
+
+        //the angle of your direction
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        //Setting the rotation to the transform.
+        ArrowDirection.transform.rotation = Quaternion.Euler(0, 0, angle);
+        */
+
 
 
     }
 
+
+    void AimWithCursor()
+    {
+        //distance from player to camera
+        float camToPlayerDist = Vector3.Distance(transform.position, Camera.main.transform.position);
+
+        //world position of cursor/mouse
+        //Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, camToPlayerDist));
+
+
+        Vector3 cursorPos = cursorScript.GetCursorPosition();
+        Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(cursorPos.x, cursorPos.y, camToPlayerDist));
+
+        // direction of cursor/mouse is pointing from player
+        Vector2 direction = mouseWorldPosition - (Vector2)transform.position;
+
+        //direction angle
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        //rotatiing the transform based on angle
+        ArrowDirection.transform.rotation = Quaternion.Euler(0, 0, angle);
+    }
 
     void HandleGrappleMovement()
     {
@@ -326,6 +386,16 @@ public class PlayerController : MonoBehaviour
             currentRunMovement.x += characterVelocityMomentum.x;
         }
 
+
+        //dust particles when flipping directions (left and right)
+        if (characterController.isGrounded && currentMovementInput.x > 0f && facingRight != true)
+        {
+            Flip(true);
+        }
+        else if (characterController.isGrounded &&currentMovementInput.x < 0f && facingRight == true)
+        {
+            Flip(false);
+        }
         
         if (isRunPressed)
         {
@@ -458,6 +528,19 @@ public class PlayerController : MonoBehaviour
 
     }
 
+
+    void Flip(bool right)
+    {
+        CreateDustTrail();
+        facingRight = right;
+    }
+
+    void CreateDustTrail()
+    {
+        dust.Play();
+    }
+
+
     private void Update()
     {
         switch (state)
@@ -469,6 +552,7 @@ public class PlayerController : MonoBehaviour
                 HandleGravity();
                 HandleJump();
                 HandleGrapple();
+                AimWithCursor();
 
                 HandleRespawn();
 

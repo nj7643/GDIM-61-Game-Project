@@ -116,6 +116,11 @@ public class CursorScript : MonoBehaviour
     {
         Vector2 anchoredPosition;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRectTransform, position, canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : mainCamera, out anchoredPosition);
+
+        Vector3 worldPosition;
+        RectTransformUtility.ScreenPointToWorldPointInRectangle(canvasRectTransform, position, canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : mainCamera, out worldPosition);
+        Debug.Log("World Position: " + worldPosition);
+        
         cursorTransform.anchoredPosition = anchoredPosition;
     }
 
@@ -141,12 +146,20 @@ public class CursorScript : MonoBehaviour
     }
 
 
+
+    public Vector3 GetCursorPosition()
+    {
+        return virtualMouse.position.ReadValue();
+    }
+
     
     private void Update()
     {
 
         Vector3 forward = cursorTransform.TransformDirection(Vector3.forward) * 200;
         Debug.DrawRay(cursorTransform.position, forward, Color.green);
+
+
         
 
         Debug.Log(mainCamera.WorldToScreenPoint(canvasRectTransform.position));
