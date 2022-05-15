@@ -71,7 +71,6 @@ public class PlayerController : MonoBehaviour
     bool isContactingWall = false;
     bool isWallJumping = false;
 
-
     //slippery surfaces
     private bool isSlippery = false;
 
@@ -96,7 +95,12 @@ public class PlayerController : MonoBehaviour
     //particle system
     public ParticleSystem dust;
     private bool facingRight = true;
+    private bool facingLeft = false;
 
+
+    //character sprite
+    [SerializeField]
+    private GameObject characterSprite;
 
     private enum State
     {
@@ -200,8 +204,11 @@ public class PlayerController : MonoBehaviour
         grappleSize -= grappleSpeed * Time.deltaTime;
         grapplerTransform.localScale = new Vector3(1, 1, grappleSize);
 
-        float reachedGrapplePositionDistance = 2.0f;
-        if(Vector3.Distance(transform.position, grapplePosition) <= reachedGrapplePositionDistance)
+
+        //distance from character to position of hookshot target
+        //float reachedGrapplePositionDistance = 2.0f;
+        float reachedGrapplePositionDistance = 3.0f;
+        if (Vector3.Distance(transform.position, grapplePosition) <= reachedGrapplePositionDistance)
         {
 
             isGrapplePressed = false;
@@ -232,7 +239,9 @@ public class PlayerController : MonoBehaviour
     private void HandleGrappleThrow()
     {
         grapplerTransform.LookAt(grapplePosition);
-        float grappleThrowSpeed = 50f;
+        //float grappleThrowSpeed = 50f;
+        //float grappleThrowSpeed = 60f;
+        float grappleThrowSpeed = 80f;
         grappleSize += grappleThrowSpeed * Time.deltaTime;
         grapplerTransform.localScale = new Vector3(1, 1, grappleSize);
 
@@ -357,13 +366,25 @@ public class PlayerController : MonoBehaviour
 
 
         //dust particles when flipping directions (left and right)
-        if (characterController.isGrounded && currentMovementInput.x > 0f && facingRight != true)
+        //if (characterController.isGrounded &&  currentMovementInput.x > 0f && facingLeft == true)
+        if (!isWallJumping && currentMovementInput.x > 0f && facingLeft == true)
         {
-            Flip(true);
-        }
-        else if (characterController.isGrounded &&currentMovementInput.x < 0f && facingRight == true)
-        {
+            if (!isJumping)
+            {
+            CreateDustTrail();
+            }
             Flip(false);
+        }
+        //else if (characterController.isGrounded && currentMovementInput.x < 0f && facingLeft != true)
+        else if (!isWallJumping && currentMovementInput.x < 0f && facingLeft != true)
+        {
+            if (!isJumping)
+            {
+                CreateDustTrail();
+            }
+
+            Flip(true);
+
         }
         
         if (isRunPressed)
@@ -498,10 +519,18 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    void Flip(bool right)
+    void Flip(bool left)
     {
-        CreateDustTrail();
-        facingRight = right;
+        /*if (characterController.isGrounded)
+        {
+            CreateDustTrail();
+        } */
+
+        facingLeft = left;
+
+        characterSprite.GetComponent<SpriteRenderer>().flipX = (left);
+
+
     }
 
     void CreateDustTrail()
@@ -570,6 +599,9 @@ public class PlayerController : MonoBehaviour
                 isWallJumping = true;
                 currentMovement.y = initialJumpVelocity;
                 currentRunMovement.y = initialJumpVelocity;
+
+
+                Flip(!facingLeft);
 
 
                 currentMovement.x = hit.normal.x * 20f;
