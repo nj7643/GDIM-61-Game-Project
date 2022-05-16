@@ -7,7 +7,9 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
 
-    PlayerInputActions playerInput;
+    //PlayerInputActions playerInput;
+
+    CursorController playerInput;
 
     Vector2 currentMovementInput;
     Vector3 currentMovement;
@@ -17,8 +19,6 @@ public class PlayerController : MonoBehaviour
     bool isRunPressed;
     CharacterController characterController;
 
-    //float walkSpeed = 14.0f;
-    //float runSpeed = 22.0f;
     float walkSpeed = 16.0f;
     float runSpeed = 24.0f;
 
@@ -71,7 +71,6 @@ public class PlayerController : MonoBehaviour
     bool isContactingWall = false;
     bool isWallJumping = false;
 
-
     //slippery surfaces
     private bool isSlippery = false;
 
@@ -83,6 +82,30 @@ public class PlayerController : MonoBehaviour
     private bool isBouncy = false;
 
 
+    //for debugging
+    private bool isRespawnPressed = false;
+    public Camera cam;
+    Vector3 mousePos;
+    [SerializeField]
+    private RectTransform cursorTransform;
+
+    [SerializeField]
+    private CursorScript cursorScript;
+
+    //particle system
+    public ParticleSystem dust;
+    private bool facingRight = true;
+    private bool facingLeft = false;
+
+
+    //character sprite
+    [SerializeField]
+    private GameObject characterSprite;
+
+    //animations
+    private Animator animator;
+
+
     private enum State
     {
         Normal, GrappleThrown, GrappleFlyingPlayer
@@ -92,10 +115,14 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
 
+        animator = characterSprite.GetComponent<Animator>();
+
         m_CurrentLaunchForce = m_MinLaunchForce;
         m_AimSlider.value = m_MinLaunchForce;
 
-        playerInput = new PlayerInputActions();
+        //playerInput = new PlayerInputActions();
+        playerInput = new CursorController();
+
         characterController = GetComponent<CharacterController>();
         playerInput.Player.Move.started += OnMovementInput;
         playerInput.Player.Move.canceled += OnMovementInput;
@@ -116,27 +143,62 @@ public class PlayerController : MonoBehaviour
         playerInput.Player.GrappleAim.performed += OnAimInput;
 
 
+        playerInput.Player.Respawn.started += OnRespawn;
+        playerInput.Player.Respawn.canceled += OnRespawn;
+
+
         state = State.Normal;
         SetupJumpVariables();
         grapplerTransform.gameObject.SetActive(false);
     }
 
 
+
+    void OnRespawn(InputAction.CallbackContext context)
+    {
+        isRespawnPressed = context.ReadValueAsButton();
+    }
+
+    void HandleRespawn()
+    {
+        if (isRespawnPressed)
+        {
+            transform.position = new Vector3(0, 1.5f, 0);
+        }
+    }
+
     void OnAimInput(InputAction.CallbackContext context)
     {
         currentAimInput = context.ReadValue<Vector2>();
 
-
-        //m_AimSlider.value = currentAimInput.x * 30.0f;
         m_AimSlider.value = Mathf.Sqrt((Mathf.Pow(currentAimInput.x, 2.0f) + Mathf.Pow(currentAimInput.y, 2.0f))) * 30.0f;
         //ArrowDirection.transform.Rotate(0, 0, 4.0f, Space.Self);
 
         //ArrowDirection.transform.eulerAngles = new Vector3(ArrowDirection.transform.eulerAngles.x, Mathf.Atan2(currentAimInput.x, currentAimInput.y) * Mathf.Rad2Deg, ArrowDirection.transform.eulerAngles.z);
-        ArrowDirection.transform.eulerAngles = new Vector3(ArrowDirection.transform.eulerAngles.x, ArrowDirection.transform.eulerAngles.y, -Mathf.Atan2(currentAimInput.x, currentAimInput.y) * Mathf.Rad2Deg - 270);
-
-
     }
 
+
+    void AimWithCursor()
+    {
+        //distance from player to camera
+        float camToPlayerDist = Vector3.Distance(transform.position, Camera.main.transform.position);
+
+        //world position of cursor/mouse
+        //Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, camToPlayerDist));
+
+
+        Vector3 cursorPos = cursorScript.GetCursorPosition();
+        Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(cursorPos.x, cursorPos.y, camToPlayerDist));
+
+        // direction of cursor/mouse is pointing from player
+        Vector2 direction = mouseWorldPosition - (Vector2)transform.position;
+
+        //direction angle
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        //rotating the transform based on angle
+        ArrowDirection.transform.rotation = Quaternion.Euler(0, 0, angle);
+    }
 
     void HandleGrappleMovement()
     {
@@ -148,8 +210,11 @@ public class PlayerController : MonoBehaviour
         grappleSize -= grappleSpeed * Time.deltaTime;
         grapplerTransform.localScale = new Vector3(1, 1, grappleSize);
 
-        float reachedGrapplePositionDistance = 2.0f;
-        if(Vector3.Distance(transform.position, grapplePosition) <= reachedGrapplePositionDistance)
+
+        //distance from character to position of hookshot target
+        //float reachedGrapplePositionDistance = 2.0f;
+        float reachedGrapplePositionDistance = 3.0f;
+        if (Vector3.Distance(transform.position, grapplePosition) <= reachedGrapplePositionDistance)
         {
 
             isGrapplePressed = false;
@@ -180,7 +245,9 @@ public class PlayerController : MonoBehaviour
     private void HandleGrappleThrow()
     {
         grapplerTransform.LookAt(grapplePosition);
-        float grappleThrowSpeed = 50f;
+        //float grappleThrowSpeed = 50f;
+        //float grappleThrowSpeed = 60f;
+        float grappleThrowSpeed = 80f;
         grappleSize += grappleThrowSpeed * Time.deltaTime;
         grapplerTransform.localScale = new Vector3(1, 1, grappleSize);
 
@@ -227,6 +294,7 @@ public class PlayerController : MonoBehaviour
         //if ((!isJumping && characterController.isGrounded && isJumpPressed) ||(!characterController.isGrounded && isJumpPressed && isContactingWall))
         {
 
+            CreateDustTrail();
             isJumping = true;
             currentMovement.y = initialJumpVelocity;
             currentRunMovement.y = initialJumpVelocity;
@@ -248,7 +316,7 @@ public class PlayerController : MonoBehaviour
     void OnJump(InputAction.CallbackContext context)
     {
         isJumpPressed = context.ReadValueAsButton();
-        Debug.Log("Jump" + context.phase);
+        //Debug.Log("Jump" + context.phase);
     }
 
 
@@ -266,6 +334,7 @@ public class PlayerController : MonoBehaviour
 
             if (isContactingWall && currentMovement.y < 0)
             {
+                CreateDustTrail();
                 currentMovement.y += gravity * 0.1f * Time.deltaTime;
                 currentRunMovement.y += gravity * 0.1f * Time.deltaTime;
 
@@ -301,26 +370,74 @@ public class PlayerController : MonoBehaviour
             currentRunMovement.x += characterVelocityMomentum.x;
         }
 
+
+
+        //animation
+        /*
+        if (currentMovementInput.x != 0f)
+        {
+            animator.SetBool("isMoving", true);
+        }
+        else
+        {
+            animator.SetBool("isMoving", false);
+        }
+        */
+
+
+
+        //dust particles when flipping directions (left and right)
+        //if (characterController.isGrounded &&  currentMovementInput.x > 0f && facingLeft == true)
+        if (!isWallJumping && currentMovementInput.x > 0f && facingLeft == true)
+        {
+            if (!isJumping)
+            {
+            CreateDustTrail();
+            }
+            Flip(false);
+        }
+        //else if (characterController.isGrounded && currentMovementInput.x < 0f && facingLeft != true)
+        else if (!isWallJumping && currentMovementInput.x < 0f && facingLeft != true)
+        {
+            if (!isJumping)
+            {
+                CreateDustTrail();
+            }
+
+            Flip(true);
+
+        }
         
         if (isRunPressed)
         {
             characterController.Move(currentRunMovement * Time.deltaTime);
+            animator.SetBool("isMoving", true);
         }
         else
         {
             characterController.Move(currentMovement * Time.deltaTime);
+            animator.SetBool("isMoving", false);
         }
 
         Debug.Log("momentum:" + characterVelocityMomentum);
+        
         //moving left
         if (isSlippery && currentMovementInput.x < 0f)
         {
-            if (characterVelocityMomentum.x > 0f)
+            if (characterVelocityMomentum.x > 0f && characterController.isGrounded)
             {
                 //characterVelocityMomentum = new Vector2(characterVelocityMomentum.x -(characterVelocityMomentum.x * .1f * Time.deltaTime), 0);
                 //characterVelocityMomentum.x += characterVelocityMomentum.x * .4f * Time.deltaTime;
                 characterVelocityMomentum.x -= 4f * Time.deltaTime;
                 //characterVelocityMomentum.x *= 1.25f * Time.deltaTime;
+            }
+            else if (characterVelocityMomentum.x > 0f)
+            {
+                characterVelocityMomentum.x -= 40f * Time.deltaTime;
+                if (characterVelocityMomentum.x < 0f)
+                {
+                    characterVelocityMomentum.x = 0f;
+                }
             }
             else
             {
@@ -344,15 +461,25 @@ public class PlayerController : MonoBehaviour
         }
 
         //moving right
-         if (isSlippery && currentMovementInput.x > 0f)
+         if (isSlippery  && currentMovementInput.x > 0f)
         {
 
-            if (characterVelocityMomentum.x < 0f)
+            if (characterVelocityMomentum.x < 0f && characterController.isGrounded)
             {
                 //characterVelocityMomentum = new Vector2(characterVelocityMomentum.x + (-characterVelocityMomentum.x * .1f * Time.deltaTime), 0);
                 //characterVelocityMomentum.x -= characterVelocityMomentum.x * .4f * Time.deltaTime;
                 characterVelocityMomentum.x += 4f * Time.deltaTime;
             }
+
+            else if (characterVelocityMomentum.x < 0f)
+            {
+                characterVelocityMomentum.x += 40f * Time.deltaTime;
+                if (characterVelocityMomentum.x > 0f)
+                {
+                    characterVelocityMomentum.x = 0f;
+                }
+            }
+
             else
             {
 
@@ -414,6 +541,27 @@ public class PlayerController : MonoBehaviour
 
     }
 
+
+    void Flip(bool left)
+    {
+        /*if (characterController.isGrounded)
+        {
+            CreateDustTrail();
+        } */
+
+        facingLeft = left;
+
+        characterSprite.GetComponent<SpriteRenderer>().flipX = (left);
+
+
+    }
+
+    void CreateDustTrail()
+    {
+        dust.Play();
+    }
+
+
     private void Update()
     {
         switch (state)
@@ -425,6 +573,9 @@ public class PlayerController : MonoBehaviour
                 HandleGravity();
                 HandleJump();
                 HandleGrapple();
+                AimWithCursor();
+
+                HandleRespawn();
 
                 if (characterController.collisionFlags == CollisionFlags.None)
                 {
@@ -460,16 +611,20 @@ public class PlayerController : MonoBehaviour
          if (hit.collider.CompareTag("Wall") && !characterController.isGrounded && characterController.collisionFlags == CollisionFlags.Sides)
          {
 
-            Debug.Log("wall!");
+            //Debug.Log("wall!");
             isContactingWall = true;
             Debug.DrawRay(hit.point, hit.normal, Color.red, 1.25f);
 
             if (isJumpPressed)
             {
+                CreateDustTrail();
                 isJumping = true;
                 isWallJumping = true;
                 currentMovement.y = initialJumpVelocity;
                 currentRunMovement.y = initialJumpVelocity;
+
+
+                Flip(!facingLeft);
 
 
                 currentMovement.x = hit.normal.x * 20f;
