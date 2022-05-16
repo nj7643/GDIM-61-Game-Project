@@ -102,6 +102,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private GameObject characterSprite;
 
+    //animations
+    private Animator animator;
+
+
     private enum State
     {
         Normal, GrappleThrown, GrappleFlyingPlayer
@@ -110,6 +114,8 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+
+        animator = characterSprite.GetComponent<Animator>();
 
         m_CurrentLaunchForce = m_MinLaunchForce;
         m_AimSlider.value = m_MinLaunchForce;
@@ -365,6 +371,21 @@ public class PlayerController : MonoBehaviour
         }
 
 
+
+        //animation
+        /*
+        if (currentMovementInput.x != 0f)
+        {
+            animator.SetBool("isMoving", true);
+        }
+        else
+        {
+            animator.SetBool("isMoving", false);
+        }
+        */
+
+
+
         //dust particles when flipping directions (left and right)
         //if (characterController.isGrounded &&  currentMovementInput.x > 0f && facingLeft == true)
         if (!isWallJumping && currentMovementInput.x > 0f && facingLeft == true)
@@ -390,10 +411,12 @@ public class PlayerController : MonoBehaviour
         if (isRunPressed)
         {
             characterController.Move(currentRunMovement * Time.deltaTime);
+            animator.SetBool("isMoving", true);
         }
         else
         {
             characterController.Move(currentMovement * Time.deltaTime);
+            animator.SetBool("isMoving", false);
         }
 
         Debug.Log("momentum:" + characterVelocityMomentum);
