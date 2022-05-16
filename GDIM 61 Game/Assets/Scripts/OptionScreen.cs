@@ -8,6 +8,8 @@ using UnityEngine.Audio;
 public class OptionScreen : MonoBehaviour
 {
     public AudioMixer theMixer;
+    public GameObject audioSettings;
+    public GameObject controlsSettings;
 
     public TMP_Text masterLabel, musicLabel, sfxLabel;
     public Slider masterSlider, musicSlider, sfxSlider;
@@ -21,6 +23,21 @@ public class OptionScreen : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void OpenAudioSettings()
+    {
+        
+        Debug.Log("pressed settings");
+        controlsSettings.SetActive(false);
+        audioSettings.SetActive(true);
+    }
+
+    public void OpenControlsSettings()
+    {
+        Debug.Log("pressed close settings");
+        audioSettings.SetActive(false);
+        controlsSettings.SetActive(true);
     }
 
 
