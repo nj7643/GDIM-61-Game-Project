@@ -818,7 +818,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &575210091
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -939,7 +939,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Earth is gone... lets just say its been a while. '
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2b425dd98a1c6704b8b2b71adff3eabd, type: 2}
   m_sharedMaterial: {fileID: -983436926697103045, guid: 2b425dd98a1c6704b8b2b71adff3eabd, type: 2}
@@ -1157,6 +1157,8 @@ PlayableDirector:
     value: {fileID: 1080425632}
   - key: {fileID: 562319321718937483, guid: 1f2142142e30d68489a1f573454c47cd, type: 2}
     value: {fileID: 677466068}
+  - key: {fileID: -2896144136328182665, guid: 1f2142142e30d68489a1f573454c47cd, type: 2}
+    value: {fileID: 0}
   m_ExposedReferences:
     m_References: []
 --- !u!1 &927637064
