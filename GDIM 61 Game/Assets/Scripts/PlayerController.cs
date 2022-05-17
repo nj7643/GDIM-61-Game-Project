@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     Vector2 currentMovementInput;
     Vector3 currentMovement;
     Vector3 currentRunMovement;
+    Vector2 stickMovementInput;
 
     bool isMovementPressed;
     bool isRunPressed;
@@ -236,6 +237,13 @@ public class PlayerController : MonoBehaviour
             //characterVelocityMomentum += Vector2.up * jumpSpeed;
 
             state = State.Normal;
+
+            bool isWalking = animator.GetBool("isMoving");
+            if (isWalking)
+            {
+                animator.SetBool("isMoving", false);
+            }
+
             ResetGravity();
             grapplerTransform.gameObject.SetActive(false);
         }
@@ -253,6 +261,7 @@ public class PlayerController : MonoBehaviour
 
         if (grappleSize >= Vector3.Distance(transform.position,grapplePosition))
         {
+            //animator.SetBool("isMoving", false);
             state = State.GrappleFlyingPlayer;
         }
     }
@@ -373,16 +382,20 @@ public class PlayerController : MonoBehaviour
 
 
         //animation
-        /*
-        if (currentMovementInput.x != 0f)
+        bool isWalking = animator.GetBool("isMoving");
+
+
+        if (!isWalking && stickMovementInput.x != 0f && characterController.isGrounded)
         {
             animator.SetBool("isMoving", true);
         }
-        else
+        else if ((isWalking) && (stickMovementInput.x == 0f|| !characterController.isGrounded))
         {
             animator.SetBool("isMoving", false);
         }
-        */
+        
+        
+        
 
 
 
@@ -408,16 +421,18 @@ public class PlayerController : MonoBehaviour
 
         }
         
+        
         if (isRunPressed)
         {
             characterController.Move(currentRunMovement * Time.deltaTime);
-            animator.SetBool("isMoving", true);
+            //animator.SetBool("isMoving", true);
         }
         else
         {
             characterController.Move(currentMovement * Time.deltaTime);
-            animator.SetBool("isMoving", false);
+            //animator.SetBool("isMoving", false);
         }
+        
 
         Debug.Log("momentum:" + characterVelocityMomentum);
         
@@ -531,6 +546,7 @@ public class PlayerController : MonoBehaviour
     void OnMovementInput(InputAction.CallbackContext context)
     {
         currentMovementInput = context.ReadValue<Vector2>();
+        stickMovementInput = context.ReadValue<Vector2>();
 
     }
 
