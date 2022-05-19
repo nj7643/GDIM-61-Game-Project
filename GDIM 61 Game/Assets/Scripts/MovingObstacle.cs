@@ -26,7 +26,7 @@ public class MovingObstacle : MonoBehaviour
         }
         else
         {
-            transform.Translate(moveSpeed * Time.deltaTime, 0, 0);
+            transform.Translate(-moveSpeed * Time.deltaTime, 0, 0);
         }
 
         if (currentTime > 0f)

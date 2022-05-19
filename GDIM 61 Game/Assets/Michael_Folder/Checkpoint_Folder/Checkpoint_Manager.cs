@@ -34,7 +34,7 @@ public class Checkpoint_Manager : MonoBehaviour
 
     public static void SpawnPlayerAtCheckpoint()
     {
-        instance.playerTransform.position = instance.savedCheckpoint.transform.position;
+        instance.playerTransform.position = instance.savedCheckpoint.transform.position + new Vector3(0.0f, 1.0f, 0.0f);
     }
 
     public static void SpawnPlayerAtBeginningOfLevel(int worldNumber, int levelNumber)

@@ -34,7 +34,7 @@ public class Player_Kill : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
 
-        Checkpoint_Manager.SpawnPlayerAtCheckpoint();
+        //Checkpoint_Manager.SpawnPlayerAtCheckpoint();
         EnableScripts(true);
     }
 }

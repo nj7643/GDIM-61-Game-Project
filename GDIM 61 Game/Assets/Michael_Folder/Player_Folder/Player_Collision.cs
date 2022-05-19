@@ -18,6 +18,12 @@ public class Player_Collision : MonoBehaviour
                 Collectables_Manager.FoundCollectable(other.GetComponent<CollectableWorld_Script>().GetCollectableName());
                 Destroy(other.gameObject);
                 break;
+
+            case "KillBox":
+                Debug.Log("Collided with killbox!");
+                gameObject.GetComponent<Player_Kill>().KillPlayer();
+                Checkpoint_Manager.SpawnPlayerAtCheckpoint();
+                break;
         }
     }
 
