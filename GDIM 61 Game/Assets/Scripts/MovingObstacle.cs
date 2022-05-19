@@ -5,7 +5,8 @@ using UnityEngine;
 public class MovingObstacle : MonoBehaviour
 {
 
-    private float directionTimer = 2.0f;
+    [SerializeField] private float directionTimer = 2.0f;
+    [SerializeField] private float moveSpeed = 5.0f;
     private float currentTime;
 
     private bool directionSwitch = true;
@@ -21,11 +22,11 @@ public class MovingObstacle : MonoBehaviour
     {
         if (directionSwitch)
         {
-            transform.Translate(5f * Time.deltaTime, 0, 0);
+            transform.Translate(moveSpeed * Time.deltaTime, 0, 0);
         }
         else
         {
-            transform.Translate(-5f * Time.deltaTime, 0, 0);
+            transform.Translate(-moveSpeed * Time.deltaTime, 0, 0);
         }
 
         if (currentTime > 0f)
