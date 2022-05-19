@@ -4,20 +4,21 @@ using UnityEngine;
 
 public class Player_Kill : MonoBehaviour
 {
-    private Player_Movement playerMovementRef;
+    //private Player_Movement playerMovementRef;
+    private PlayerController playerMovementRef;
     private Player_Collision playerCollisionRef;
     private SpriteRenderer playerSpriteRef;
 
     private void Awake()
     {
-        playerMovementRef = gameObject.GetComponent<Player_Movement>();
+        playerMovementRef = gameObject.GetComponent<PlayerController>();
         playerCollisionRef = gameObject.GetComponent<Player_Collision>();
-        playerSpriteRef = gameObject.GetComponent<SpriteRenderer>();
+        playerSpriteRef = gameObject.GetComponentInChildren<SpriteRenderer>();
     }
 
     public void KillPlayer()
     {
-        playerMovementRef.SetVelocityToZero();
+        //playerMovementRef.SetVelocityToZero();
         EnableScripts(false);
         StartCoroutine(Respawn_Timer());
     }
