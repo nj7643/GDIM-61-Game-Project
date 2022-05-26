@@ -10,9 +10,6 @@ public class Checkpoint_Manager : MonoBehaviour
 
     [SerializeField] private GameObject[] startingCPs_W1;
 
-    private GameObject previousCheckpoint;
-    private GameObject currentCheckpoint;
-
     private GameObject savedCheckpoint;
 
     private void Awake()
@@ -25,9 +22,6 @@ public class Checkpoint_Manager : MonoBehaviour
 
     public static void SetCheckpoint(GameObject incomingObject)
     {
-        //instance.previousCheckpoint = instance.currentCheckpoint;
-        //instance.currentCheckpoint = incomingObject;
-
         instance.savedCheckpoint = incomingObject;
         Debug.Log("Set checkpoint!");
     }

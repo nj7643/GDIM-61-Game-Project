@@ -9,8 +9,17 @@ public class Player_Collision : MonoBehaviour
         switch (other.tag)
         {
             case "Checkpoint":
-                Debug.Log("Collided with checkpoint!");
-                Checkpoint_Manager.SetCheckpoint(other.gameObject);
+                Checkpoint_Info checkpointInfo = other.GetComponent<Checkpoint_Info>();
+
+                if (checkpointInfo.GetHasBeenHit() == false)
+                {
+                    Checkpoint_Manager.SetCheckpoint(other.gameObject);
+                    checkpointInfo.SetHasBeenHit(true);
+                }
+                else
+                {
+                    Debug.Log("Already passed this checkpoint!");
+                }
                 break;
 
             case "Collectable":
@@ -25,7 +34,7 @@ public class Player_Collision : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.K))
         {
-            gameObject.GetComponent<Player_Kill>().KillPlayer();
+            gameObject.GetComponent<Copy_PlayerKill>().KillPlayer();
         }
     }
 

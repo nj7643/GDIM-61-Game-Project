@@ -11,8 +11,8 @@ public class Player_Kill : MonoBehaviour
     private void Awake()
     {
         playerMovementRef = gameObject.GetComponent<Player_Movement>();
-        playerCollisionRef = gameObject.GetComponent<Player_Collision>();
         playerSpriteRef = gameObject.GetComponent<SpriteRenderer>();
+        playerCollisionRef = gameObject.GetComponent<Player_Collision>();
     }
 
     public void KillPlayer()
