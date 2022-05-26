@@ -16,7 +16,8 @@ public class OptionScreen : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        audioSettings.SetActive(false);
+        controlsSettings.SetActive(false);
     }
 
     // Update is called once per frame
