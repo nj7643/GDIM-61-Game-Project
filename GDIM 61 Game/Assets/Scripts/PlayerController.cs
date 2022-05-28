@@ -83,6 +83,8 @@ public class PlayerController : MonoBehaviour
     private bool isBouncy = false;
 
 
+    bool isGrounded = false;
+
     //for debugging
     private bool isRespawnPressed = false;
     public Camera cam;
@@ -308,6 +310,14 @@ public class PlayerController : MonoBehaviour
             currentMovement.y = initialJumpVelocity;
             currentRunMovement.y = initialJumpVelocity;
 
+            bool isJumpingPressed = animator.GetBool("isJumping");
+            if (!isJumpingPressed)
+            {
+                animator.SetBool("isJumping", true);
+                animator.SetBool("isGrounded", false);
+            }
+
+
         }
         else if (!isJumpPressed && isJumping && characterController.isGrounded)
         {
@@ -331,15 +341,43 @@ public class PlayerController : MonoBehaviour
 
     void HandleGravity()
     {
+
         if (characterController.isGrounded)
+        //if (isGrounded)
         {
+            
+            bool groundCheck = animator.GetBool("isGrounded");
+            if (!groundCheck)
+            {
+                animator.SetBool("isGrounded", true);
+                //animator.SetBool("isFalling", false);
+            }
+            
+            
 
             currentMovement.y = groundedGravity;
             currentRunMovement.y = groundedGravity;
+            bool isJumpingPressed = animator.GetBool("isJumping");
+            if (isJumpingPressed)
+            {
+                animator.SetBool("isJumping", false);
+                
+                
+            }
         }
 
         else
         {
+            
+            bool groundCheck = animator.GetBool("isGrounded");
+            if (groundCheck)
+            {
+                animator.SetBool("isGrounded", false);
+
+            }
+            
+
+            
 
             if (isContactingWall && currentMovement.y < 0)
             {
@@ -351,6 +389,16 @@ public class PlayerController : MonoBehaviour
             else {
                 currentMovement.y += gravity * Time.deltaTime;
                 currentRunMovement.y += gravity * Time.deltaTime;
+                bool isFalling = animator.GetBool("isFalling");
+                if (!isFalling && (currentMovement.y < 0f || currentRunMovement.y < 0f))
+                {
+                    animator.SetBool("isFalling", true);
+                }
+                else if (isFalling)
+                {
+                    animator.SetBool("isFalling", false);
+                }
+
             }
 
         }
@@ -585,6 +633,7 @@ public class PlayerController : MonoBehaviour
             default:
             case State.Normal:
 
+                
                 HandleMovement();
                 HandleGravity();
                 HandleJump();
