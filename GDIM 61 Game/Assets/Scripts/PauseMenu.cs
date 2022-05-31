@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
+    [SerializeField]
+    Cursor cursorlook;
     // Start is called before the first frame update
     public static bool GameIsPaused = false;
 
@@ -35,6 +37,7 @@ public class PauseMenu : MonoBehaviour
         settingMenuUI.SetActive(false);
         Time.timeScale = 1f;
         GameIsPaused = false;
+        
 
     }
 
