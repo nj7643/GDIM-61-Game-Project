@@ -67,4 +67,17 @@ public class DialogueManager : MonoBehaviour
         Debug.Log("end of conversation");
         animator.SetBool("IsOpen", false);
     }
+    public void DisplayNextSentenceEnter()
+    {
+        if(Input.GetKey(KeyCode.N))
+        if (sentences.Count == 0)
+        {
+            EndDialogue();
+            return;
+        }
+
+        string sentence = sentences.Dequeue();
+        StopAllCoroutines();
+        StartCoroutine(TypeSentence(sentence));
+    }
 }
