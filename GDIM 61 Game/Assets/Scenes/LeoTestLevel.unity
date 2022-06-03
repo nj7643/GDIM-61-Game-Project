@@ -13130,6 +13130,42 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 7d785ca1d70e1484e8dc2dc385f19ebd, type: 3}
   m_PrefabInstance: {fileID: 612423187}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &624923736 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 22bf307a53d30754f86e17c1931aacc3, type: 3}
+  m_PrefabInstance: {fileID: 1513512973}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &624923737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 624923736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75328f680c0fb314aac3c52f0a18d3e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogue:
+    name: keegan
+    sentences:
+    - hello
+    - hru
+  player: 
+--- !u!65 &624923738
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 624923736}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.017500008, y: 0.0051678126, z: 0.016250001}
+  m_Center: {x: 0, y: -0.0013338594, z: 0.0031250005}
 --- !u!1 &627817920 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4418550986862212696, guid: e59d6c23d93333240a04f694c8698b3d, type: 3}
@@ -14952,6 +14988,7 @@ MonoBehaviour:
     name: genral
     sentences:
     - hello
+  player: 
 --- !u!114 &848074994
 MonoBehaviour:
   m_ObjectHideFlags: 0
