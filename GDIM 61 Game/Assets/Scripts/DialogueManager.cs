@@ -9,6 +9,7 @@ public class DialogueManager : MonoBehaviour
     public TMP_Text nameText;
     public TMP_Text dialogueText;
 
+    //animation to enter the dialogue box into screen
     public Animator animator;
 
     private Queue<string> sentences;
@@ -21,6 +22,7 @@ public class DialogueManager : MonoBehaviour
 
     public void StartDialogue (Dialogue dialogue)
     {
+        //activates the animation
         animator.SetBool("IsOpen", true);
 
         Debug.Log("START CONVO with " + dialogue.name);
@@ -28,25 +30,29 @@ public class DialogueManager : MonoBehaviour
         nameText.text = dialogue.name;
 
         sentences.Clear();
-
+        // checks sentence entered by triggerDialogue
         foreach(string sentence in dialogue.sentences)
         {
             sentences.Enqueue(sentence);
            
         }
-
-        DisplayNextSentence();
+            DisplayNextSentence();
+        
+        
         
     }
 
+    //for buttons (when continue is pressed)
     public void DisplayNextSentence()
     {
+        //checks if there is no more sentence to type
         if(sentences.Count == 0)
         {
             EndDialogue();
             return;
         }
 
+        //goes through the sentence que and types
         string sentence = sentences.Dequeue();
         StopAllCoroutines();
         StartCoroutine(TypeSentence(sentence));
@@ -54,6 +60,7 @@ public class DialogueManager : MonoBehaviour
 
     IEnumerator TypeSentence (string sentence)
     {
+        //types sentence to dialogue box per character
         dialogueText.text = "";
         foreach(char letter in sentence.ToCharArray())
         {
@@ -64,20 +71,20 @@ public class DialogueManager : MonoBehaviour
 
     public void EndDialogue()
     {
+        //closes the dialogue box
         Debug.Log("end of conversation");
         animator.SetBool("IsOpen", false);
     }
-    public void DisplayNextSentenceEnter()
-    {
-        if(Input.GetKey(KeyCode.N))
-        if (sentences.Count == 0)
-        {
-            EndDialogue();
-            return;
-        }
 
-        string sentence = sentences.Dequeue();
-        StopAllCoroutines();
-        StartCoroutine(TypeSentence(sentence));
+    private void Update()
+    {
+        //press tab to conibue the dialogue instead of clicking continue
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            Debug.Log("next");
+            DisplayNextSentence();
+        }
     }
+
+
 }
