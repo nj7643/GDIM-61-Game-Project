@@ -13958,10 +13958,10 @@ MonoBehaviour:
   dialogue:
     name: General
     sentences:
-    - b
-    - nn
-    - hru
-    - hru
+    - Welcome Traveler to planet Gearium
+    - Travel through the planet to save your crew from the aliens
+    - Use WASD for movement and space to jump
+    - Press escape to open the pause menu to access the settings
   dialogueCanvas: {fileID: 1600101632}
   eTextInput: {fileID: 1704681626}
   player: Player
