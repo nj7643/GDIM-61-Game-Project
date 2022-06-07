@@ -54,4 +54,32 @@ public class MovingObstacle : MonoBehaviour
             directionSwitch = true;
         }
     }
+
+
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+
+            other.transform.SetParent(gameObject.transform);
+            Debug.Log("Success!");
+        }
+
+    }
+
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+
+            other.transform.SetParent(null);
+            Debug.Log("Exit!");
+        }
+
+    }
+    
+
+
 }
