@@ -98,6 +98,15 @@ public partial class @CursorController : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Dialogue"",
+                    ""type"": ""Button"",
+                    ""id"": ""c70e65f8-4c72-4313-bbec-6eba04414be4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -406,6 +415,17 @@ public partial class @CursorController : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Respawn"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""01a425f5-c1f4-47ae-b126-ebfa79ba4d21"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Dialogue"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1028,6 +1048,7 @@ public partial class @CursorController : IInputActionCollection2, IDisposable
         m_Player_Grapple = m_Player.FindAction("Grapple", throwIfNotFound: true);
         m_Player_GrappleAim = m_Player.FindAction("Grapple Aim", throwIfNotFound: true);
         m_Player_Respawn = m_Player.FindAction("Respawn", throwIfNotFound: true);
+        m_Player_Dialogue = m_Player.FindAction("Dialogue", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1107,6 +1128,7 @@ public partial class @CursorController : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Grapple;
     private readonly InputAction m_Player_GrappleAim;
     private readonly InputAction m_Player_Respawn;
+    private readonly InputAction m_Player_Dialogue;
     public struct PlayerActions
     {
         private @CursorController m_Wrapper;
@@ -1119,6 +1141,7 @@ public partial class @CursorController : IInputActionCollection2, IDisposable
         public InputAction @Grapple => m_Wrapper.m_Player_Grapple;
         public InputAction @GrappleAim => m_Wrapper.m_Player_GrappleAim;
         public InputAction @Respawn => m_Wrapper.m_Player_Respawn;
+        public InputAction @Dialogue => m_Wrapper.m_Player_Dialogue;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1152,6 +1175,9 @@ public partial class @CursorController : IInputActionCollection2, IDisposable
                 @Respawn.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRespawn;
                 @Respawn.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRespawn;
                 @Respawn.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRespawn;
+                @Dialogue.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDialogue;
+                @Dialogue.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDialogue;
+                @Dialogue.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDialogue;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -1180,6 +1206,9 @@ public partial class @CursorController : IInputActionCollection2, IDisposable
                 @Respawn.started += instance.OnRespawn;
                 @Respawn.performed += instance.OnRespawn;
                 @Respawn.canceled += instance.OnRespawn;
+                @Dialogue.started += instance.OnDialogue;
+                @Dialogue.performed += instance.OnDialogue;
+                @Dialogue.canceled += instance.OnDialogue;
             }
         }
     }
@@ -1344,6 +1373,7 @@ public partial class @CursorController : IInputActionCollection2, IDisposable
         void OnGrapple(InputAction.CallbackContext context);
         void OnGrappleAim(InputAction.CallbackContext context);
         void OnRespawn(InputAction.CallbackContext context);
+        void OnDialogue(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

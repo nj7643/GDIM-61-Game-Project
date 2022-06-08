@@ -1,14 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class DialogueTrigger : MonoBehaviour
 {
     public Dialogue dialogue;
     public GameObject dialogueCanvas;
     public GameObject eTextInput;
-    public string player; 
+    public string player;
 
+
+    private bool inDialogue = false;
    
     public void TriggerDialogue()
     {
@@ -21,6 +24,7 @@ public class DialogueTrigger : MonoBehaviour
     public void OnTriggerStay(Collider other)
     {
         //used on signs when collision with player 
+        //bool inDialogue = false;
 
         Debug.Log("entered the sign");
 
@@ -31,12 +35,23 @@ public class DialogueTrigger : MonoBehaviour
            
             dialogueCanvas.SetActive(true);
 
-            //while player is in the trigger they can use e to start dialogue
-            if (Input.GetKeyDown(KeyCode.E))
+            
+             //while player is in the trigger they can use e to start dialogue
+             if (Input.GetKeyDown(KeyCode.E))
+             {
+                 eTextInput.SetActive(false);
+                 FindObjectOfType<DialogueManager>().StartDialogue(dialogue);
+             }
+            
+
+            /*
+            if (inDialogue == false)
             {
                 eTextInput.SetActive(false);
                 FindObjectOfType<DialogueManager>().StartDialogue(dialogue);
+                inDialogue = true;
             }
+            */
 
         }
 
@@ -53,6 +68,7 @@ public class DialogueTrigger : MonoBehaviour
     public void OnTriggerExit(Collider other)
     {
         dialogueCanvas.SetActive(false);
+        inDialogue = false;
     }
 
 
