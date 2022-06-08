@@ -12,7 +12,24 @@ public class DialogueTrigger : MonoBehaviour
 
 
     private bool inDialogue = false;
-   
+    private bool isReadPressed = false;
+    CursorController playerInput;
+
+    private void Awake()
+    {
+        playerInput = new CursorController();
+
+        playerInput.Player.Dialogue.started += OnRead;
+        playerInput.Player.Dialogue.canceled += OnRead;
+    }
+
+
+
+    void OnRead(InputAction.CallbackContext context)
+    {
+        isReadPressed = context.ReadValueAsButton();
+    }
+
     public void TriggerDialogue()
     {
         //use for buttons
@@ -37,10 +54,12 @@ public class DialogueTrigger : MonoBehaviour
 
             
              //while player is in the trigger they can use e to start dialogue
-             if (Input.GetKeyDown(KeyCode.E))
+             if (inDialogue == false && isReadPressed)
+             //if (inDialogue == false && Input.GetKeyDown(KeyCode.E))
              {
                  eTextInput.SetActive(false);
                  FindObjectOfType<DialogueManager>().StartDialogue(dialogue);
+                inDialogue = true;
              }
             
 
@@ -71,6 +90,18 @@ public class DialogueTrigger : MonoBehaviour
         inDialogue = false;
     }
 
+
+
+
+    void OnEnable()
+    {
+        playerInput.Player.Enable();
+    }
+
+    void OnDisable()
+    {
+        playerInput.Player.Disable();
+    }
 
 
 }
