@@ -2,7 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
+using UnityEngine.InputSystem;
 using TMPro;
+
+
+
+
 
 public class DialogueManager : MonoBehaviour
 {
@@ -14,10 +20,37 @@ public class DialogueManager : MonoBehaviour
 
     private Queue<string> sentences;
 
+
+    CursorController playerInput;
+    //PlayerInputActions playerInput;
+    private bool isTalkPressed;
+    private float timeRemaining = 0;
+
+
+    private void Awake()
+    {
+        playerInput = new CursorController();
+        //playerInput = new PlayerInputActions();
+
+        isTalkPressed = false;
+        playerInput.Player.Dialogue.started += OnTalk;
+        playerInput.Player.Dialogue.canceled += OnTalk;
+        //playerInput.Player.Dialogue.performed += OnTalk;
+    }
+    
+
+    
+    void OnTalk(InputAction.CallbackContext context)
+    {
+        isTalkPressed = context.ReadValueAsButton();
+    }
+    
+
     // Start is called before the first frame update
     void Start()
     {
         sentences = new Queue<string>();
+        
     }
 
     public void StartDialogue (Dialogue dialogue)
@@ -79,11 +112,30 @@ public class DialogueManager : MonoBehaviour
     private void Update()
     {
         //press tab to conibue the dialogue instead of clicking continue
-        if (Input.GetKeyDown(KeyCode.Tab))
+
+        if(timeRemaining <=0 && isTalkPressed)
+        //Input.GetKeyDown(KeyCode.Tab))
         {
             Debug.Log("next");
             DisplayNextSentence();
+            timeRemaining = .35f;
         }
+
+        if (timeRemaining > 0)
+        {
+            timeRemaining -= Time.deltaTime;
+        }
+    }
+
+
+    void OnEnable()
+    {
+        playerInput.Player.Enable();
+    }
+
+    void OnDisable()
+    {
+        playerInput.Player.Disable();
     }
 
 
