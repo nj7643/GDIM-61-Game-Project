@@ -8,12 +8,14 @@ public class Player_Kill : MonoBehaviour
     private PlayerController playerMovementRef;
     private Player_Collision playerCollisionRef;
     private SpriteRenderer playerSpriteRef;
+    public bool scriptsEnabled;
 
     private void Awake()
     {
         playerMovementRef = gameObject.GetComponent<PlayerController>();
         playerCollisionRef = gameObject.GetComponent<Player_Collision>();
         playerSpriteRef = gameObject.GetComponentInChildren<SpriteRenderer>();
+        scriptsEnabled = true;
     }
 
     public void KillPlayer()
@@ -28,6 +30,7 @@ public class Player_Kill : MonoBehaviour
         playerMovementRef.enabled = incomingBool;
         playerCollisionRef.enabled = incomingBool;
         playerSpriteRef.enabled = incomingBool;
+        scriptsEnabled = incomingBool;
     }
 
     IEnumerator Respawn_Timer()

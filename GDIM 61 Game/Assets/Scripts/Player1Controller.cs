@@ -257,6 +257,14 @@ public class Player1Controller : MonoBehaviour
             GrappleSpawn.GetComponent<GrappleScript>().foundTarget = false;
         }
 
+        /*
+        if (!gameObject.GetComponent<Player_Kill>().scriptsEnabled)
+        {
+            grappleInProgress = false;
+            isGrapplePressed = false;
+            canGrapple = false;
+        }
+        */
     }
 
 
