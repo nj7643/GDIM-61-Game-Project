@@ -8,7 +8,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Title Screen.unity
     guid: d202c99636159bd49bca743ee0118479
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/LeoTestLevelFinal.unity
     guid: 079236e6a57a0c54a922ec4148f6bfd8
+  - enabled: 1
+    path: Assets/Scenes/LeoTestLevel.unity
+    guid: 51052ce2ef95b654594bdc5439672382
   m_configObjects: {}
